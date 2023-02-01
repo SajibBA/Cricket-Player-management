@@ -1,0 +1,2 @@
+To run this app open Xamp, run apache server and go 
+http://localhost/scorecard/home.html

@@ -1,0 +1,189 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+	<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+	<meta content="utf-8" http-equiv="encoding">
+	<link rel="stylesheet" type="text/css" href="background/background1.css" media="screen" />  
+	<h1> Cricket Player management </h1> 	 
+
+	<style>
+
+html
+{
+    overflow: scroll;
+}
+	</style>
+	
+	</head>
+	<body>
+
+		<canvas id="projector">Your browser does not support the Canvas element.</canvas>
+		<div id="home-page">
+			<input type="button" id="addplayer"  value="Add player">
+			<input type="button" id="viewplayer"  value="View players">
+			
+			
+		</div>
+		
+		<div id="add-player" hidden >
+		<h1> Adding Player </h1> <br>
+		<table>
+			<img id="preview" style="width:10%" src="images/noimage.png" /></br>
+			Player Image
+			<input type="file" onchange="showMyImage(this,'preview')"  id="imgURL"/><br>
+		<!--	<input type="number" id="palyer_id" name="player_id" placeholder="Player ID" min="1" required /> <br> -->
+			<input type="text" id="name" name="name" placeholder="Name" required onblur="validateTextBox()" />  * <br>
+			<input type="text" id="nation" name="nation" placeholder="Player's Nation" required />  * <br>
+			Batting Hand <br>
+			<input type="radio" id="bat_hand" name="bat_hand" value="Right Handed" checked> Right Handed<br>
+			<input type="radio" id="bat_hand" name="bat_hand" value="Left Handed"> Left Handed<br>
+			<input type="number" id="match" name="match" placeholder="match played" min="0" /> <br>
+			<input type="number" id="runs" name="runs" placeholder="runs" min="0" /> <br>
+			<input type="number" id="half_century" name="half_century" placeholder="Half century" min="0" />
+			<input type="number" id="century" name="century" placeholder="Century" min="0" /> <br>
+			
+			<input type="checkbox" id="bowler" name="bowler" value="bowler" onclick="addField()"> Bowler?<br>
+			
+			<script type="text/javascript">
+						function addField(){
+				if(document.getElementById("bowler").checked){
+				
+					$('#balling-details').slideDown();
+				}else{
+					$('#balling-details').slideUp();
+				}
+			}
+			</script>
+		<div id="balling-details" hidden>
+			Bowling Type:<select name="ball_type" id="ball_type" default value=" ">
+					<option value="Fast">Fast</option>
+					<option value="Medium">Medium</option>
+					<option value="Finger spin">Finger spin</option>
+					<option value="Wrist spin">Wrist spin</option>
+					</select> <br>
+					<input type="number" id="wickets" name="wickets" placeholder="wickets" min="0" />
+					<input type="number" id="fifer" name="fifer" placeholder="Fifer" min="0" /> <br>
+		
+		</div>
+		
+			<input type="button" id="add" name="add" value="Add Data"/>
+			<input type="button" id="cancel" onclick="$('#add-player').slideUp();$('#home-page').slideDown();" name="cancel" value="Cancel"/>
+		
+		</table>
+		</div>
+
+		<div id="player-view"></div>
+		<div id="player-edit"></div>
+		<div id="scoreboard"></div>
+
+		
+		<!-- <script type="text/javascript" src="background/background.js"></script>	 
+		<script type="text/javascript" src="js/app.js"></script>  -->
+		<script type="text/javascript" src="js/jquery.min.js"></script>	
+		<script type="text/javascript">
+		
+		
+		function validateTextBox() {
+
+}
+		
+		
+			$(document).ready(function(){
+			$('#addplayer').click(function(){
+			$('#home-page').slideUp();
+			$('#player-edit').slideUp();
+			$('#add-player').slideDown();
+			})
+			
+			
+  $("#add").click(function(){
+  
+      if (document.getElementById("name").value != "" && document.getElementById("nation").value != "") {
+  				//var player_id = $('#player_id').val();
+				var name = $('#name').val();
+				var nation = $('#nation').val();
+				//var bat_hand = $('#bat_hand').val();
+				var bat_hand = $("input:radio[name=bat_hand]:checked").val()
+				var played_match = $('#match').val();
+				var runs = $('#runs').val();
+				var half_century = $('#half_century').val();
+				var century = $('#century').val();
+				var ball_type = $('#ball_type').val();
+				var wickets = $('#wickets').val();
+				var fifer = $('#fifer').val();
+				var img = $('#preview').attr('src');
+				console.log(img);
+				
+    $.ajax({url: "add.php", 
+	type:"POST",
+	data: {p_name : name,p_nation:nation,p_bat_hand:bat_hand,p_played_match:played_match,p_runs:runs,p_half_century:half_century,p_century:century,p_ball_type:ball_type,p_wickets:wickets,p_fifer:fifer,p_img:img },
+	success: function(data){
+							if(data == '/success'){
+						
+						//var player_id = $('#player_id').val('');
+						var name = $('#name').val('');
+						var nation = $('#nation').val('');
+						//var bat_hand = $('#bat_hand').val('');
+						var played_match = $('#match').val('');
+						var runs = $('#runs').val('');
+						var half_century = $('#half_century').val('');
+						var century = $('#century').val('');
+						var ball_type = $('#ball_type').val('');
+						var wickets = $('#wickets').val('');
+						var fifer = $('#fifer').val('');
+							  $.get('view.php',function(data){
+								
+								$('#player-view').html(data);
+							})
+						}
+      //$("#player-view").html(data);
+    }});
+	}
+	else {
+        alert("Please enter Name and Nation");
+    }
+	
+	
+	
+  });
+			$('#viewplayer').click(function(){
+			 $.get('view.php',function(data){
+								$('#player-view').slideDown();
+								$('#player-view').html(data);
+							}) 
+			
+			})
+			
+			})
+			
+			function showMyImage(fileInput,id) {
+			
+			console.log(fileInput);
+			
+			var files = fileInput.files;
+			console.log(files);
+			for (var i = 0; i < files.length; i++) {           
+					var file = files[i];
+					var imageType = /image.*/;     
+					if (!file.type.match(imageType)) {
+						continue;
+					}           
+					var img=document.getElementById(""+id);            
+					img.file = file;    
+					var reader = new FileReader();
+					reader.onload = (function(aImg) { 
+						return function(e) { 
+							aImg.src = e.target.result; 
+						}; 
+					})(img);
+					reader.readAsDataURL(file);
+				}  
+				
+    }
+	
+	
+		</script>
+
+	</body>
+</html>
